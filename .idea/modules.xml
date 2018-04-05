@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SpringRestApiExample.iml" filepath="$PROJECT_DIR$/.idea/modules/SpringRestApiExample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SpringRestApiExample_main.iml" filepath="$PROJECT_DIR$/.idea/modules/SpringRestApiExample_main.iml" group="SpringRestApiExample" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SpringRestApiExample_test.iml" filepath="$PROJECT_DIR$/.idea/modules/SpringRestApiExample_test.iml" group="SpringRestApiExample" />
+    </modules>
+  </component>
+</project>
