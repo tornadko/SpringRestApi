@@ -2,6 +2,7 @@ package com.alex.develop.SpringRestApiExample;
 
 import com.alex.develop.SpringRestApiExample.dal.User;
 import com.alex.develop.SpringRestApiExample.exception.UserNotFoundException;
+import com.alex.develop.SpringRestApiExample.grpc.GreetingClient;
 import com.alex.develop.SpringRestApiExample.store.Store;
 import com.alex.develop.SpringRestApiExample.store.UserInMemoryStore;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,14 @@ import java.util.List;
 public class UserApiController {
 
     private final Store<User> store = new UserInMemoryStore();
+
+    @RequestMapping(value = "/api/user/greet", method = RequestMethod.POST)
+    public ResponseEntity<?> greet(@RequestBody User user) {
+        return GreetingClient
+                .greet(user.getName())
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.badRequest().build());
+    }
 
     @RequestMapping(value = "/api/users", method = RequestMethod.GET)
     public List<User> users() {
