@@ -11,6 +11,8 @@ As gRPC uses a code generation you need to run code as the first step:
 
 **Useful links:**
 
+https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle
+
 https://github.com/grpc/grpc-java
 
 https://github.com/grpc/grpc-java/blob/master/COMPILING.md
