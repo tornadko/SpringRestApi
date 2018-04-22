@@ -16,9 +16,10 @@
 
 package com.alex.develop.SpringRestApiExample.grpc;
 
-import com.alex.develop.springrestapi.GreeterGrpc;
-import com.alex.develop.springrestapi.HelloReply;
-import com.alex.develop.springrestapi.HelloRequest;
+import com.alex.develop.SpringRestApiExample.dal.User;
+import com.alex.develop.springrestapi.user.UserId;
+import com.alex.develop.springrestapi.user.UserReply;
+import com.alex.develop.springrestapi.user.UserServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
@@ -29,18 +30,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * A simple client that requests a greeting from the {@link GreetingServer}.
+ * A simple client that requests a user from the {@link UserDatabaseServer}.
  */
-public class GreetingClient {
-    private static final Logger logger = Logger.getLogger(GreetingClient.class.getName());
+public class UserRpcClient {
+    private static final Logger logger = Logger.getLogger(UserRpcClient.class.getName());
 
     private final ManagedChannel channel;
-    private final GreeterGrpc.GreeterBlockingStub blockingStub;
+    private final UserServiceGrpc.UserServiceBlockingStub blockingStub;
 
     /**
      * Construct client connecting to HelloWorld server at {@code host:port}.
      */
-    public GreetingClient(String host, int port) {
+    public UserRpcClient(String host, int port) {
         this(ManagedChannelBuilder.forAddress(host, port)
                 // Channels are secure by default (via SSL/TLS). For the example we disable TLS to avoid
                 // needing certificates.
@@ -51,35 +52,38 @@ public class GreetingClient {
     /**
      * Construct client for accessing RouteGuide server using the existing channel.
      */
-    GreetingClient(ManagedChannel channel) {
+    UserRpcClient(ManagedChannel channel) {
         this.channel = channel;
-        blockingStub = GreeterGrpc.newBlockingStub(channel);
+        blockingStub = UserServiceGrpc.newBlockingStub(channel);
     }
 
     public void shutdown() throws InterruptedException {
         channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
     }
 
-    private Optional<String> prepareGreeting(String name) {
-        HelloRequest request = HelloRequest.newBuilder().setName(name).build();
-        HelloReply response;
-        try {
-            response = blockingStub.sayHello(request);
-        } catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return Optional.empty();
-        }
-        return Optional.of(response.getMessage());
-    }
-
-    public static Optional<String> greet(String name) {
-        GreetingClient client = new GreetingClient("localhost", 8081);
-        Optional<String> result = client.prepareGreeting(name);
+    public static Optional<User> getUser(String id) {
+        UserRpcClient client = new UserRpcClient("localhost", 8082);
+        Optional<User> result = client.pretreiveUser(id);
         try {
             client.shutdown();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         return result;
+    }
+
+    private Optional<User> pretreiveUser(String id) {
+        UserId userId = UserId.newBuilder().setId(id).build();
+        UserReply response;
+        try {
+            response = blockingStub.retreiveUser(userId);
+        } catch (StatusRuntimeException e) {
+            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            return Optional.empty();
+        }
+        return Optional.of(
+                new User(
+                        Long.valueOf(response.getId()),
+                        response.getName()));
     }
 }

@@ -2,7 +2,7 @@ package com.alex.develop.SpringRestApiExample;
 
 import com.alex.develop.SpringRestApiExample.dal.User;
 import com.alex.develop.SpringRestApiExample.exception.UserNotFoundException;
-import com.alex.develop.SpringRestApiExample.grpc.GreetingClient;
+import com.alex.develop.SpringRestApiExample.grpc.UserRpcClient;
 import com.alex.develop.SpringRestApiExample.store.Store;
 import com.alex.develop.SpringRestApiExample.store.UserInMemoryStore;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +17,6 @@ public class UserApiController {
 
     private final Store<User> store = new UserInMemoryStore();
 
-    @RequestMapping(value = "/api/user/greet", method = RequestMethod.POST)
-    public ResponseEntity<?> greet(@RequestBody User user) {
-        return GreetingClient
-                .greet(user.getName())
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.badRequest().build());
-    }
-
     @RequestMapping(value = "/api/users", method = RequestMethod.GET)
     public List<User> users() {
         return store.readAll();
@@ -34,6 +26,13 @@ public class UserApiController {
     public User userById(@PathVariable String userId) {
         return store
                 .read(Long.valueOf(userId))
+                .orElseThrow(() -> new UserNotFoundException(userId));
+    }
+
+    @RequestMapping(value = "/api/users/rpc/{userId}", method = RequestMethod.GET)
+    public User userViaRpcById(@PathVariable String userId) {
+        return UserRpcClient
+                .getUser(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
     }
 

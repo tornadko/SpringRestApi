@@ -16,9 +16,9 @@
 
 package com.alex.develop.SpringRestApiExample.grpc;
 
-import com.alex.develop.springrestapi.GreeterGrpc;
-import com.alex.develop.springrestapi.HelloReply;
-import com.alex.develop.springrestapi.HelloRequest;
+import com.alex.develop.springrestapi.user.UserId;
+import com.alex.develop.springrestapi.user.UserReply;
+import com.alex.develop.springrestapi.user.UserServiceGrpc;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
@@ -27,18 +27,18 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
- * Server that manages startup/shutdown of a {@code Greeter} server.
+ * Server that manages startup/shutdown of a {@code {@link UserDatabaseServer}} server.
  */
-public class GreetingServer {
-    private static final Logger logger = Logger.getLogger(GreetingServer.class.getName());
+public class UserDatabaseServer {
+    private static final Logger logger = Logger.getLogger(UserDatabaseServer.class.getName());
 
     private Server server;
 
     public void start() throws IOException {
         /* The port on which the server should run */
-        int port = 8081;
+        int port = 8082;
         server = ServerBuilder.forPort(port)
-                .addService(new GreeterImpl())
+                .addService(new UserServiceImpl())
                 .build()
                 .start();
         logger.info("Server started, listening on " + port);
@@ -47,7 +47,7 @@ public class GreetingServer {
             public void run() {
                 // Use stderr here since the logger may have been reset by its JVM shutdown hook.
                 System.err.println("*** shutting down gRPC server since JVM is shutting down");
-                GreetingServer.this.stop();
+                UserDatabaseServer.this.stop();
                 System.err.println("*** server shut down");
             }
         });
@@ -72,16 +72,19 @@ public class GreetingServer {
      * Main launches the server from the command line.
      */
     public static void main(String[] args) throws IOException, InterruptedException {
-        final GreetingServer server = new GreetingServer();
+        final UserDatabaseServer server = new UserDatabaseServer();
         server.start();
         server.blockUntilShutdown();
     }
 
-    static class GreeterImpl extends GreeterGrpc.GreeterImplBase {
-
+    static class UserServiceImpl extends UserServiceGrpc.UserServiceImplBase {
         @Override
-        public void sayHello(HelloRequest req, StreamObserver<HelloReply> responseObserver) {
-            HelloReply reply = HelloReply.newBuilder().setMessage("Hello " + req.getName() + "!").build();
+        public void retreiveUser(UserId request, StreamObserver<UserReply> responseObserver) {
+            UserReply reply = UserReply
+                    .newBuilder()
+                    .setId(request.getId())
+                    .setName("StubUserName")
+                    .build();
             responseObserver.onNext(reply);
             responseObserver.onCompleted();
         }

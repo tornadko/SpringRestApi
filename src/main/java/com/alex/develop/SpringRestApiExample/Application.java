@@ -1,6 +1,6 @@
 package com.alex.develop.SpringRestApiExample;
 
-import com.alex.develop.SpringRestApiExample.grpc.GreetingServer;
+import com.alex.develop.SpringRestApiExample.grpc.UserDatabaseServer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -11,12 +11,12 @@ public class Application {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
-        runGrpcServer();
+        runUserDatabaseServer();
     }
 
-    private static void runGrpcServer() {
+    private static void runUserDatabaseServer() {
         try {
-            final GreetingServer server = new GreetingServer();
+            final UserDatabaseServer server = new UserDatabaseServer();
             server.start();
             server.blockUntilShutdown();
         } catch (IOException | InterruptedException e) {
